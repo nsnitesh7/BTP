@@ -1,0 +1,108 @@
+#include <bits/stdc++.h>
+#define maxWeight 1000
+using namespace std;
+
+struct edge
+{
+	int start;
+	int end;
+};
+
+int calculateWeight(int **schedulingOutput,int i,int j,int phasesCount)
+{
+	return 50;
+}
+
+int main()
+{
+
+	int applicationsCount,phasesCount,maxAvailProcessors;
+	cin>>maxAvailProcessors>>phasesCount>>applicationsCount;
+	int **schedulingOutput=new int*[phasesCount];
+	
+	for(int i=0;i<phasesCount;i++)
+		schedulingOutput[i]=new int[applicationsCount];
+		
+	for(int i=0;i<phasesCount;i++)
+	{
+		for(int j=0;j<applicationsCount;j++)
+		{
+			cin>>schedulingOutput[i][j];
+		}
+	}
+
+	int no_of_nodes=applicationsCount;
+
+	int no_of_edges=((no_of_nodes)*(no_of_nodes-1))/2;
+
+	edge edges[no_of_edges];
+	int weight[no_of_edges];
+	
+	//Calculate weights
+	
+	int e=0;
+	
+	for(int i=0;i<no_of_nodes-1;i++)
+	{
+		for(int j=i+1;j<no_of_nodes;j++)
+		{
+			weight[e]=calculateWeight(schedulingOutput,i,j,phasesCount);
+			edges[e].start=i;
+			edges[e].end=j;
+			e++;
+		}
+	}
+	
+//	cout<<e<<"\t"<<no_of_edges<<endl;
+	
+	FILE *fp=freopen("GRAPH.TXT","w",stdout);
+	
+	if(fp!=NULL)
+	{
+		if(no_of_nodes%2==1)
+		{
+			cout<<no_of_nodes+1<<" "<<no_of_edges+no_of_nodes<<endl;
+		}
+		else
+		{
+			cout<<no_of_nodes<<" "<<no_of_edges<<endl;
+		}
+		
+		for(int e=0;e<no_of_edges;e++)
+		{
+			cout<<edges[e].start<<" "<<edges[e].end<<" "<<weight[e]<<endl;
+		}
+		
+		if(no_of_nodes%2==1)
+		{
+			for(int n=0;n<no_of_nodes;n++)
+			{
+				cout<<no_of_nodes<<" "<<n<<" "<<maxWeight<<endl;
+			}
+		}
+		
+		fclose(fp);
+		
+		//system("")
+		
+		//read from edges.txt
+		
+		FILE *fp=freopen("edges.txt","e",stdin);
+		
+		int a,b;
+		
+		for(int i=0;i<no_of_nodes/2;i++)
+		{
+			cin>>a>>b;
+			cout<<a<<"\t"<<b<<endl;
+		}
+		
+		fclose(fp);
+	}
+	else
+	{
+		printf("Error in opening file. Please retry!");
+		exit(1);
+	}
+	return 0;
+}
