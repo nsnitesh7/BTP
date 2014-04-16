@@ -1,0 +1,51 @@
+This is BibTeX, Version 0.99c (TeX Live 2009/Debian)
+The top-level auxiliary file: MPBind.aux
+The style file: IEEEtran.bst
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Database file #1: MPBind.bib
+-- IEEEtran.bst version 1.11 (2003/04/02) by Michael Shell.
+-- http://www.ctan.org/tex-archive/macros/latex/contrib/supported/IEEEtran/
+-- See the "IEEEtran_bst_HOWTO.pdf" manual for usage information.
+
+Done.
+You've used 6 entries,
+            3975 wiz_defined-function locations,
+            842 strings with 8198 characters,
+and the built_in function-call counts, 5551 in all, are:
+= -- 452
+> -- 122
+< -- 58
++ -- 70
+- -- 18
+* -- 284
+:= -- 819
+add.period$ -- 14
+call.type$ -- 6
+change.case$ -- 6
+chr.to.int$ -- 132
+cite$ -- 6
+duplicate$ -- 383
+empty$ -- 421
+format.name$ -- 24
+if$ -- 1277
+int.to.chr$ -- 0
+int.to.str$ -- 6
+missing$ -- 62
+newline$ -- 38
+num.names$ -- 6
+pop$ -- 126
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 2
+skip$ -- 426
+stack$ -- 0
+substring$ -- 314
+swap$ -- 342
+text.length$ -- 14
+text.prefix$ -- 0
+top$ -- 5
+type$ -- 0
+warning$ -- 0
+while$ -- 28
+width$ -- 7
+write$ -- 82

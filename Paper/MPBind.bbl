@@ -1,0 +1,54 @@
+\begin{thebibliography}{1}
+\providecommand{\url}[1]{#1}
+\csname url@rmstyle\endcsname
+\providecommand{\newblock}{\relax}
+\providecommand{\bibinfo}[2]{#2}
+\providecommand\BIBentrySTDinterwordspacing{\spaceskip=0pt\relax}
+\providecommand\BIBentryALTinterwordstretchfactor{4}
+\providecommand\BIBentryALTinterwordspacing{\spaceskip=\fontdimen2\font plus
+\BIBentryALTinterwordstretchfactor\fontdimen3\font minus
+  \fontdimen4\font\relax}
+\providecommand\BIBforeignlanguage[2]{{%
+\expandafter\ifx\csname l@#1\endcsname\relax
+\typeout{** WARNING: IEEEtran.bst: No hyphenation pattern has been}%
+\typeout{** loaded for the language `#1'. Using the pattern for}%
+\typeout{** the default language instead.}%
+\else
+\language=\csname l@#1\endcsname
+\fi
+#2}}
+
+\bibitem{lcmpintel}
+L.~Zhao, R.~Iyer, S.~Makineni, R.~Illikkal, J.~Moses, and D.~Newell,
+  ``Constraint-aware large-scale cmp cache design,'' in \emph{Proceedings of
+  the 14th International Conference on High Performance Computing}, ser.
+  HiPC'07.\hskip 1em plus 0.5em minus 0.4em\relax Berlin, Heidelberg:
+  Springer-Verlag, 2007, pp. 161--171.
+
+\bibitem{Cho06}
+C.-B. Cho and T.~Li, ``{Complexity-Based Program Phase Analysis and
+  Classification},'' in \emph{Proc. of Int. Conf. on Parallel Architectures and
+  Compilation Techniques}.\hskip 1em plus 0.5em minus 0.4em\relax ACM, 2006,
+  pp. 105--113.
+
+\bibitem{Sherwood03}
+T.~Sherwood, S.~Sair, and B.~Calder, ``{Phase Tracking and Prediction},''
+  \emph{ACM SIGARCH Computer Architecture News}, vol.~31, no.~2, pp. 336--349,
+  2003.
+
+\bibitem{Benerjee08}
+S.~Banerjee, G.~Surendra, and S.~K. Nandy, ``{On the Effectiveness of Phase
+  Based Regression Models to Trade Power and Performance using Dynamic
+  Processor Adaptation},'' \emph{J. Syst. Archit.}, vol.~54, no.~8, pp.
+  797--815, Aug. 2008.
+
+\bibitem{paper14}
+C.~yen Chang and P.~Mohapatra, ``Performance {I}mprovement of {A}llocation
+  {S}chemes for {M}esh-{C}onnected {C}omputers,'' \emph{J. Parallel Distrib.
+  Comput.}, vol.~52, no.~1, pp. 40--68, 1998.
+
+\bibitem{Wang94}
+L.~Wang and T.~Jiang, ``{On the Complexity of Multiple Sequence Alignment},''
+  \emph{Journal of Computational Biology}, vol.~1, no.~4, pp. 337--348, 1994.
+
+\end{thebibliography}

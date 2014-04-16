@@ -1,0 +1,41 @@
+1. Paper Reading
+2. Spacing, commas , alignment
+3. Data movement figure, entropy figure
+4. Embed sir's images
+5. Math symbol alignment
+6. fixing parameters standardization ()
+7. Cores/ Applications
+8. Procedure remove algorithm 
+9. Figures for random, left-right and center-center,blossom etc. 
+10. Diagram font size increase and color change and bring down
+11. References write down.
+
+FIGURES:
+1. DAG FIGURE
+2. Entropy fig
+3. Schedule fig (Modify)
+3. DMF fig
+4. Random algo fig (general or case)
+5. left-right fig (general or case)
+6. center-center fig (general or case)
+7. blossom fig (general or case)
+
+
+Doubts
+1. Mapping or binding
+2. Table split
+3. Contribution and organization
+4. Footnote for core entropy
+
+LinArch
+USED PARAMETERs:
+n - cores - c1 ... cn
+m - application - a1 ... am
+k - phases - t1 ...tk 
+sch - scheduling
+b - binding
+bij 
+dmf - data movement factor
+eij - core entropy
+e - total entropy
+
