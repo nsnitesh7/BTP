@@ -611,18 +611,18 @@ This algorithm \ref{algCCP1} takes schedule of applications $sch$, span list $sp
 % Blossom weight
 \begin{algorithm}[tb]
 \footnotesize
-\textbf{Input:} Schedule $S$ of the processes, application $i$, application $j$  \ \\
-\textbf{Output:} Weight $w$ between application $i$ and application $j$.
+\textbf{Input:} Schedule $sch$ of the processes, application $a_i$, application $a_j$  \ \\
+\textbf{Output:} Weight $w$ between application $a_i$ and application $a_j$.
 \begin{algorithmic}[1]
 \STATE $avgI$=Average cores requirement of application $i$
 \STATE $avgJ$=Average cores requirement of application $j$
 \STATE $weight$=0
-\FOR {k in range(0,$No\_Of\_Phases$)} 
-\STATE $weight$+=($S$[k][i]-$avgI$)*($S$[k][j]-$avgJ$);
+\FOR {p in range(0,$k$)} 
+\STATE $weight + = (sch[p][i]-avgI)*(sch[p][j]-avgJ)$
 \ENDFOR
 \STATE return $weight$
 \end{algorithmic}
-\caption{\textbf{calculateWeight}}
+\caption{\textbf{Blossom\_Weight}}
 \vspace{-0.1cm}
 \label{algWeightCalculation}
 \end{algorithm}
@@ -632,40 +632,40 @@ This algorithm \ref{algCCP1} takes schedule of applications $sch$, span list $sp
 \includegraphics[scale=0.5]{./figure/blossom.eps}
 \vspace{0.0cm}\caption{Modified Blossom}
 \vspace{-0.1cm}
-\label{dmf}
+\label{blossom}
 \end{figure}
 
 %Modified Blossom
 \subsection{Modified Blossom}
-The algorithm \ref{algBlossom} takes scheduling innformation of applications as input. It first tries to find the application order as well as application pairs such that if the applications are binded using this information will give a better binding. We first find the best application pairs such that if they are matched together will give a better binding. For this we first convert the sheduling information into a graph. In graph, nodes will represent applications and weighted edges represent the compatibility score between two applications. Less the compatibility score that means more the compatibility. We are using Blossom algorithm for finding minimum cost perfect matching. So the output of blossom algorithm will be the pairs of applications such that total cost is minimized in perfect matching. We store the pair information and modify the scheduling information for finding the application order. Now we will assume both the applications in pair information as a single application and again find the graph and run Blossom algorithm. We will do this until the applications count comes down to 1. Let say we have n applications and the application order we got from above be $\{a_1, a_2,.., a_{n}\}$. And let say pairs P be $\{(a_1,a_2),(a_3,a_4),....(a_{n-1},a_{n})\}$. Then for each pair in P we will find the minimum processor required if they are bind together. And bind that pair in the alloted minpairReq processors. Binding is represented as ph*n matrix. We will see that we have used more columns(processors) than actually given. Remove the extra columns in which the binding is least. And bind those applications in the phases wherever the cores are not used. Now the new binded matrix after adjusting of columns will be the final binding.
+The algorithm \ref{algBlossom} takes scheduling innformation of applications as input. It first tries to find the application order as well as application pairs such that if the applications are binded using this information will give a better binding. We first find the application pairs. For this we first convert the sheduling information into a graph. In graph, nodes will represent applications and weighted edges represent the compatibility score between two applications. Less the compatibility score will mean more the compatibility. We are using Blossom algorithm for finding minimum cost perfect matching. The output of blossom algorithm will be the pairs of applications such that total cost is minimized in perfect matching. We store the pair information which we will use for finding the application order. We then modify the scheduling information. For it, we will assume both the applications in pair information as a single application and again find the graph and run Blossom algorithm. We do this until the applications count comes down to 1. Let say the application order we got from above be $\{a_1, a_2\:...\:, a_{m}\}$. And let say pairs P be $\{(a_1,a_2),(a_3,a_4)\:...\:, (a_{m-1},a_{m})\}$. Then for each pair in P we find the minimum processor requirement $minpairReq$ of them if they are binded toogether and bind that pair in $minpairReq$ cores. Binding is represented as k*n matrix. We will see that we have used more cores i.e. columns in binding matrix than the actual given number. Remove the extra columns in which the binding is least and bind those applications in the phases wherever the cores are not used in linear fashion starting from first column. The new binded matrix after adjusting of columns will be the final binding matrix.
 
 
-%Calculate Weight
-\subsubsection{Calculate Weight}
-The algorithm \ref{algWeightCalculation} finds the weight of between two applications using the scheduling information. We are using this algorithm while making edges between nodes while we are converting the scheduling information into a graph. We first find the average cores requirement of $i$th and $j$th application and store it into $avgI$ \& $avgJ$ respectively. So the weight between two applications is calculated as product of how much extra both applications require than their average requirement. Weight will be the sum of the above calculated product for each phase.
+%Blossom Weight
+\subsubsection{Blossom Weight}
+The algorithm \ref{algWeightCalculation} finds the weight between two applications using the scheduling information. We are using this algorithm while making edges between nodes while we are converting the scheduling information into a graph. We find the average cores requirement of $a_i^{th}$ and $a_j^{th}$ application and store it into $avgI$ \& $avgJ$ respectively. So the weight between two applications is calculated as product of how much extra both applications require than their average requirement. Weight will be the sum of the above calculated product in each phase.
 
 \begin{algorithm}[tb]
 \footnotesize
-\textbf{Input:} Schedule S of the processes  \ \\
-\textbf{Output:} Binding B and total entropy E.
+\textbf{Input:} Schedule $sch$ of the applications  \ \\
+\textbf{Output:} Binding $b$ and total entropy $e$
 \begin{algorithmic}[1]
 \WHILE {$No\_Of\_Applications\_in\_Schedule$!=1}
-\FOR {all (i,j) pair} 
-\STATE $Edge\_Weight\_Between\_i\_and\_j$=calculateWeight(S,i,j)
+\FOR {all ($a_i$,$a_j$) pair} 
+\STATE $Edge\_Weight\_Between\_a_i\_and\_a_j$=$Blossom\_Weight(sch,a_i,a_j)$
 \ENDFOR
-\STATE Construct graph G={applications,edges}
-\STATE $perfect\_matched\_edges$=Blossom\_Algorithm(G)
-\STATE Store the perfect\_matched\_edges information
-\STATE new\_schedule=after merging schedule corresponding to the applications $i$ \& $j$ if ($i$,$j$) $\in$ $perfect\_matched\_edges$
+\STATE Construct graph $G$=(applications,edges)
+\STATE $perfect\_matched\_edges$=$Blossom\_Algorithm(G)$
+\STATE Store the $perfect\_matched\_edges$ information
+\STATE new\_schedule=after merging schedule corresponding to the applications $a_i$ \& $a_j$ if ($a_i$,$a_j$) $\in$ $perfect\_matched\_edges$
 \ENDWHILE
-\STATE The stored information will give the sequence $\{a_1, a_2,.., a_{n}\}$ in which the applications should be binded.
-\STATE $pairs$=$\{(a_1,a_2),(a_3,a_4),....(a_{n-1},a_{n})\}$
-\FOR {($i$,$j$) in $pairs$}
-\STATE $minpairReq[ij]$=Minimum\_processors\_needed to bind $i$th \& $j$th applications together.
-\STATE $initialBinding$=$initialBinding$ + (bind ith and jth applications in minpairReq[ij] alloted processors in each phase)
+\STATE The stored information will give the sequence $\{a_1, a_2\:...\:, a_{m}\}$ in which the applications should be binded.
+\STATE $pairs$=$\{(a_1,a_2),(a_3,a_4)\:...\:, (a_{m-1},a_{m})\}$
+\FOR {($a_i$,$a_j$) in $pairs$}
+\STATE $minpairReq[ij]$=Minimum\_processors\_needed to bind $a_i^{th}$ \& $a_j^{th}$ applications together
+\STATE $initialBinding$=$initialBinding$ + (bind $a_i^{th}$ and $a_j^{th}$ applications in minpairReq[ij] alloted processors in each phase)
 \ENDFOR
-\STATE $extraColumns$=$Number\_Of\_Columns\_Used$-$Number\_Of\_Processors$
-\STATE $finalBinding$=Remove extraColumns which are least binded and bind them linearly
+\STATE $extraColumns$=$Number\_Of\_Columns\_Used$-$n$
+\STATE $finalBinding$=Remove $extraColumns$ which are least binded and bind them linearly
 \STATE return $finalBinding$
 \end{algorithmic}
 \caption{\textbf{Modified\_Blossom}}

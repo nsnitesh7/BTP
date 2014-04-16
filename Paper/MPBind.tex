@@ -155,11 +155,11 @@ Modern processors come with large number of cores. Many cores are embedded in a 
 
 \begin{figure*}[tb]%
 \begin{center}%
+
 \subfigure[\textbf{Linear Array}]{%
 \label{LinArch}%
 \includegraphics[scale=0.45]{figure/LinArch.eps}
 }%
-
 
 \hspace{0.2cm}
 \subfigure[\textbf{Mesh Architecture}]{%
@@ -310,8 +310,6 @@ dmf = \sum_{i=1}^{k}(dmf_i)
 \end{equation} 
 \ \\
 \subsubsection{Entropy}
-%TODO figure
-
 \begin{figure}[tb]
 \centering 
 \includegraphics[scale=0.5]{./figure/entropy.eps}
@@ -401,6 +399,14 @@ As shown in algorithm \ref{algrandom}, we minimize the overall entropy of the bi
 \end{figure}
 
 
+\begin{figure}[tb]
+\centering 
+\includegraphics[scale=0.5]{./figure/left_right_fine.eps}
+\vspace{0.0cm}\caption{Fine Pass \ref{algLRP2}}
+\vspace{-0.1cm}
+\label{figLRP2}
+\end{figure}
+
 This algorithm \ref{algLR}, uses various procedures to bind the applications on the cores. It first recognizes the applications with the highest core demand in the continous phases by calling the Biggest Block algoritm \ref{algBB}. After recognizing the biggest blocks of applications, it calculates the span of the applications (i.e. allocates some number of cores for specific applications for all the phases) by calling the Generate Span algorithm \ref{algGS}. Then we bind the applications in the span list on the cores by calling the Coarse Pass algorithm \ref{algLRP1}. The binding of the applications is done alternatively from left to right and right to left on the cores spanned by them according to the span list generated as shown in Fig. \ref{figLRP1}. According to the Fig. \ref{figLRP1}, the application $a_1$ is binded on the cores from the left to right in the span of this application. The next application $a_4$ is binded from right to left in the span. And similarly application $a_2$ is binded from left to right.The binding is done to fulfill the maximum schedule requirement of the applications for a particular phase. Then we update the free cores and the schedule of the applications that still needs to be binded. Now, we call the Fine Pass algorithm \ref{algLRP2} by passing the required parameters for binding the remaining schedule on the free cores. The applications are binded on the free cores according to the parameter $param$ passed to the function Fine Pass algorithm \ref{algLRP2}. Then the total entropy ($e$) of the binding is calculated and binding $b$ and entropy $e$ are returned.
 
 \begin{algorithm}[tb]
@@ -422,6 +428,41 @@ This algorithm \ref{algLR}, uses various procedures to bind the applications on 
 
 %Biggest Block algorithm
 \subsubsection{Biggest-Block Algorithm}
+
+\begin{figure*}[t]%
+\begin{center}
+
+\subfigure[\textbf{Biggest Blocks of $a_1$}]{
+\label{imgBB1}
+\includegraphics[scale=0.30]{figure/biggest_block_a1.eps}
+}%
+
+\hspace{0.1cm}
+\subfigure[\textbf{Biggest Blocks of $a_2$}]{
+\label{imgBB2}
+\includegraphics[scale=0.30]{figure/biggest_block_a2.eps}
+}
+
+
+\hspace{0.1cm}
+\subfigure[\textbf{Biggest Blocks of $a_3$}]{%
+\label{imgBB3}%
+\includegraphics[scale=0.30]{figure/biggest_block_a3.eps}
+}%
+
+\hspace{0.1cm}
+\subfigure[\textbf{Biggest Blocks of $a_4$}]{%
+\label{imgBB4}%
+\includegraphics[scale=0.30]{figure/biggest_block_a4.eps}
+}%
+
+\end{center}
+\vspace{-0.4cm}
+\caption{\textbf{Biggest Blocks}}
+\label{imgBB}
+\vspace{-0.3cm}
+\end{figure*}
+
 This algorithm takes the schedule $sch$ as input. It breaks the core requirement of an application in the terms of big rectangular blocks whose $height$ is the phases and the $width$ is the core requirement. This way rectangular blocks are formed for each of the application and inserted in the biggest-block list $bb$. This list $bb$ is sorted according to $area$ and according to $height$ in case of tie and returned by this algorithm. 
 
 \begin{algorithm}[tb]
@@ -611,18 +652,18 @@ This algorithm \ref{algCCP1} takes schedule of applications $sch$, span list $sp
 % Blossom weight
 \begin{algorithm}[tb]
 \footnotesize
-\textbf{Input:} Schedule $S$ of the processes, application $i$, application $j$  \ \\
-\textbf{Output:} Weight $w$ between application $i$ and application $j$.
+\textbf{Input:} Schedule $sch$ of the processes, application $a_i$, application $a_j$  \ \\
+\textbf{Output:} Weight $w$ between application $a_i$ and application $a_j$.
 \begin{algorithmic}[1]
 \STATE $avgI$=Average cores requirement of application $i$
 \STATE $avgJ$=Average cores requirement of application $j$
 \STATE $weight$=0
-\FOR {k in range(0,$No\_Of\_Phases$)} 
-\STATE $weight$+=($S$[k][i]-$avgI$)*($S$[k][j]-$avgJ$);
+\FOR {p in range(0,$k$)} 
+\STATE $weight + = (sch[p][i]-avgI)*(sch[p][j]-avgJ)$
 \ENDFOR
 \STATE return $weight$
 \end{algorithmic}
-\caption{\textbf{calculateWeight}}
+\caption{\textbf{Blossom\_Weight}}
 \vspace{-0.1cm}
 \label{algWeightCalculation}
 \end{algorithm}
@@ -637,35 +678,35 @@ This algorithm \ref{algCCP1} takes schedule of applications $sch$, span list $sp
 
 %Modified Blossom
 \subsection{Modified Blossom}
-The algorithm \ref{algBlossom} takes scheduling innformation of applications as input. It first tries to find the application order as well as application pairs such that if the applications are binded using this information will give a better binding. We first find the best application pairs such that if they are matched together will give a better binding. For this we first convert the sheduling information into a graph. In graph, nodes will represent applications and weighted edges represent the compatibility score between two applications. Less the compatibility score that means more the compatibility. We are using Blossom algorithm for finding minimum cost perfect matching. So the output of blossom algorithm will be the pairs of applications such that total cost is minimized in perfect matching. We store the pair information and modify the scheduling information for finding the application order. Now we will assume both the applications in pair information as a single application and again find the graph and run Blossom algorithm. We will do this until the applications count comes down to 1. Let say we have n applications and the application order we got from above be $\{a_1, a_2,.., a_{n}\}$. And let say pairs P be $\{(a_1,a_2),(a_3,a_4),....(a_{n-1},a_{n})\}$. Then for each pair in P we will find the minimum processor required if they are bind together. And bind that pair in the alloted minpairReq processors. Binding is represented as ph*n matrix. We will see that we have used more columns(processors) than actually given. Remove the extra columns in which the binding is least. And bind those applications in the phases wherever the cores are not used. Now the new binded matrix after adjusting of columns will be the final binding.
+The algorithm \ref{algBlossom} takes scheduling innformation of applications as input. It first tries to find the application order as well as application pairs such that if the applications are binded using this information will give a better binding. We first find the application pairs. For this we first convert the sheduling information into a graph. In graph, nodes will represent applications and weighted edges represent the compatibility score between two applications. Less the compatibility score will mean more the compatibility. We are using Blossom algorithm for finding minimum cost perfect matching. The output of blossom algorithm will be the pairs of applications such that total cost is minimized in perfect matching. We store the pair information which we will use for finding the application order. We then modify the scheduling information. For it, we will assume both the applications in pair information as a single application and again find the graph and run Blossom algorithm. We do this until the applications count comes down to 1. Let say the application order we got from above be $\{a_1, a_2\:...\:, a_{m}\}$. And let say pairs P be $\{(a_1,a_2),(a_3,a_4)\:...\:, (a_{m-1},a_{m})\}$. Then for each pair in P we find the minimum processor requirement $minpairReq$ of them if they are binded toogether and bind that pair in $minpairReq$ cores. Binding is represented as k*n matrix. We will see that we have used more cores i.e. columns in binding matrix than the actual given number. Remove the extra columns in which the binding is least and bind those applications in the phases wherever the cores are not used in linear fashion starting from first column. The new binded matrix after adjusting of columns will be the final binding matrix.
 
 
-%Calculate Weight
-\subsubsection{Calculate Weight}
-The algorithm \ref{algWeightCalculation} finds the weight of between two applications using the scheduling information. We are using this algorithm while making edges between nodes while we are converting the scheduling information into a graph. We first find the average cores requirement of $i$th and $j$th application and store it into $avgI$ \& $avgJ$ respectively. So the weight between two applications is calculated as product of how much extra both applications require than their average requirement. Weight will be the sum of the above calculated product for each phase.
+%Blossom Weight
+\subsubsection{Blossom Weight}
+The algorithm \ref{algWeightCalculation} finds the weight between two applications using the scheduling information. We are using this algorithm while making edges between nodes while we are converting the scheduling information into a graph. We find the average cores requirement of $a_i^{th}$ and $a_j^{th}$ application and store it into $avgI$ \& $avgJ$ respectively. So the weight between two applications is calculated as product of how much extra both applications require than their average requirement. Weight will be the sum of the above calculated product in each phase.
 
 \begin{algorithm}[tb]
 \footnotesize
-\textbf{Input:} Schedule S of the processes  \ \\
-\textbf{Output:} Binding B and total entropy E.
+\textbf{Input:} Schedule $sch$ of the applications  \ \\
+\textbf{Output:} Binding $b$ and total entropy $e$
 \begin{algorithmic}[1]
 \WHILE {$No\_Of\_Applications\_in\_Schedule$!=1}
-\FOR {all (i,j) pair} 
-\STATE $Edge\_Weight\_Between\_i\_and\_j$=calculateWeight(S,i,j)
+\FOR {all ($a_i$,$a_j$) pair} 
+\STATE $Edge\_Weight\_Between\_a_i\_and\_a_j$=$Blossom\_Weight(sch,a_i,a_j)$
 \ENDFOR
-\STATE Construct graph G={applications,edges}
-\STATE $perfect\_matched\_edges$=Blossom\_Algorithm(G)
-\STATE Store the perfect\_matched\_edges information
-\STATE new\_schedule=after merging schedule corresponding to the applications $i$ \& $j$ if ($i$,$j$) $\in$ $perfect\_matched\_edges$
+\STATE Construct graph $G$=(applications,edges)
+\STATE $perfect\_matched\_edges$=$Blossom\_Algorithm(G)$
+\STATE Store the $perfect\_matched\_edges$ information
+\STATE new\_schedule=after merging schedule corresponding to the applications $a_i$ \& $a_j$ if ($a_i$,$a_j$) $\in$ $perfect\_matched\_edges$
 \ENDWHILE
-\STATE The stored information will give the sequence $\{a_1, a_2,.., a_{n}\}$ in which the applications should be binded.
-\STATE $pairs$=$\{(a_1,a_2),(a_3,a_4),....(a_{n-1},a_{n})\}$
-\FOR {($i$,$j$) in $pairs$}
-\STATE $minpairReq[ij]$=Minimum\_processors\_needed to bind $i$th \& $j$th applications together.
-\STATE $initialBinding$=$initialBinding$ + (bind ith and jth applications in minpairReq[ij] alloted processors in each phase)
+\STATE The stored information will give the sequence $\{a_1, a_2\:...\:, a_{m}\}$ in which the applications should be binded.
+\STATE $pairs$=$\{(a_1,a_2),(a_3,a_4)\:...\:, (a_{m-1},a_{m})\}$
+\FOR {($a_i$,$a_j$) in $pairs$}
+\STATE $minpairReq[ij]$=Minimum\_cores\_needed to bind $a_i^{th}$ \& $a_j^{th}$ applications together
+\STATE $initialBinding$=$initialBinding$ + (bind $a_i^{th}$ and $a_j^{th}$ applications in minpairReq[ij] alloted cores in each phase)
 \ENDFOR
-\STATE $extraColumns$=$Number\_Of\_Columns\_Used$-$Number\_Of\_Processors$
-\STATE $finalBinding$=Remove extraColumns which are least binded and bind them linearly
+\STATE $extraColumns$=$Number\_Of\_Columns\_Used$-$n$
+\STATE $finalBinding$=Remove $extraColumns$ which are least binded and bind them linearly
 \STATE return $finalBinding$
 \end{algorithmic}
 \caption{\textbf{Modified\_Blossom}}
@@ -675,6 +716,7 @@ The algorithm \ref{algWeightCalculation} finds the weight of between two applica
 
 
 %Figures for the algorithms
+\iffalse
 %Example Schedule figure
 \begin{figure} [tb]
 \centering
@@ -722,10 +764,8 @@ The algorithm \ref{algWeightCalculation} finds the weight of between two applica
 \caption{\textbf{After Phase-Two Algorithm(\ref{algLRP2}) used in Center-Center Algorithm(\ref{algCC}) }}
 \label{imgCCP2}
 \end{figure}
+\fi
 
-
-
-	
 \section{Experiment and result}
 
 \ \\ 
@@ -737,7 +777,9 @@ The plot of Random Algorithm(\ref{algrandom}) is shown with the green line. In t
 The total entropy value of Left-Right Algorithm(\ref{algLR}) is in between the total initial entropy value and the total entropy value after applying Random Algorithm(\ref{algrandom}). In this algorithm, the binding was done in the two crucial phases. In the phase phase of the binding the biggest continuous rectangular application blocks in the continuous phases were recognized. After recognizing these biggest blocks, span(cores) for the applications with the highest area were allocated till all the cores gets spanned. Then the binding on the spanned cores was done by the applications according to the schedule.This phase may lead to some free cores in some of the phases and schedule of some application unsatisfied. To bind the remaining schedule, we call the Phase-Two Algorithm(\ref{algLRP2}). This algorithm takes the parameter($param$). This parameter is used in calculating the cost values while assigning the free cores to the remaining schedule. By using this $param$ value we calculate the undershoot parameter($alpha$) and overshoot parameter($beta$). The undershoot parameter($aplha$) is responsible for taking in account the penalty for the free cores left(internal fragmentation) while binding the application in the continous free space between the two consecutive applications binded in phase one. The overshoot parameter($beta$) penalizes for the schedule of the application that still is unsatisfied after binding the application in the free space between the two consecutive applications binded in phase one. We want to minimize the overall penalty. The application best-fitted in the free spaces. This results shown in the graphs are when parameters $alpha$ and $beta$ are given equal weightage. This way the remaining schedule is binded to the cores and the overall entropy value is calculated. This algorithm performs slighty better than Center-Center Algorithm(\ref{algCC}) but significantly reduces the intial value of the entropy. We can apply the Random Algorithm(\ref{algrandom}) over the binding we got from this alogrithm as the initial configuratiom. This way we can further minimize the overall total entropy of the binding.\ \\
 
 The results of the Center-Center algorithm(\ref{algCC}) are comparable to the results of the Left-Right algorithm \ref{algLR}. This algorithm also binds the schedule in the two phases. This algorithm differs from the Left-Right algorithm(\ref{algLR}) just in the phase one of the binding. In phase one of the algorithm the binding is done by calling the Phase-One-Center Algorithm(\ref{algCCP1}). It center binds the applications in the cores spanned by them. The binding in second phase is done by calling the Phase-Two algorithm(\ref{algLRP2}). This also considers the undershoot($alpha$) and overshoot parameter($beta$) values while binding. By running Random Algorithm(\ref{algrandom}) over the binding outputted by this algorithm, the total entropy value can be further improved.  \ \\
- 
+
+The results of Modified Blossom algorithm(\ref{algBlossom}) is far better than Left-Right algorithm \ref{algLR} and Center-Center algorithm(\ref{algCC}). This algorithm performs better than the random algorithm also. The main crux of the algorithm lies in extracting the application order as well as application pairs such that if the applications are binded using this information will give a good binding. The algorithm uses Blossom Algorithm (provide reference) logm times to find the application order. After finding the application order the binding step is simple. We bind the applications in pair according to the application order that we got from above. Since this algorithm binds considering a more strong form of closeness between applications, this algorithm performs best among the available algorithms.
+
 \begin{figure} [tb]
 \centering
 \includegraphics[scale=0.45]{figure/data1.eps}
@@ -759,9 +801,7 @@ The results of the Center-Center algorithm(\ref{algCC}) are comparable to the re
 \label{EntropyVsApps}
 \end{figure}
 
-
 Figure ~\ref{EntropyVsProc}. is shows Variation of entropy with processors. Figure ~\ref{EntropyVsPhases}. is shows Variation of entropy with number of phases. Figure ~\ref{EntropyVsApps}. is shows Variation of entropy with number of application.
-
 
 \section{Conclusions and Future Work} \label{concl}
 The minimum value of total entropy is obtained by running the blossom algorithm to bind the given schedule. Left-Left Algorithm (\ref{algLR}) and Center-Center Algorithm(\ref{algCC}) gives the average resutls between the initial entropy value and the total entropy value obtained by running the Blossom algorithm.
